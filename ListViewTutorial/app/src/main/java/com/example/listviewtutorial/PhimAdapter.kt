@@ -6,8 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listviewtutorial.databinding.LayoutItemPhimBinding
+import com.example.listviewtutorial.handlelick.DoubleClick
+import com.example.listviewtutorial.handlelick.DoubleClickListener
 
 
 class PhimAdapter(
@@ -18,6 +21,7 @@ class PhimAdapter(
 ) : RecyclerView.Adapter<PhimAdapter.PhimViewHolder>() {
 
     var click: Int = 0
+    private val handler = Handler()
 
     inner class PhimViewHolder(val binding: LayoutItemPhimBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnLongClickListener, View.OnClickListener {
@@ -44,40 +48,22 @@ class PhimAdapter(
 
         override fun onClick(v: View?) {
             val phim: MovieData = listPhim[adapterPosition]
-            //onItemClick(phim)
-            //listener.onDoubleClickListener(phim)
 
-            Log.e("hai.nv4", " Click " + click)
-            p = phim
             handleClick(phim)
         }
 
-        lateinit var p: MovieData
-        var handler = Handler(Looper.getMainLooper())
-
-        fun handleClick(phim: MovieData) {
+        private fun handleClick(phim: MovieData) {
             click++
-            if (click == 1) {
-                //handler.postDelayed(runnable, 1000)
-            } else {
-                //handler.removeCallbacks(runnable)
-                listener.onDoubleClickListener(phim)
-                click = 0;
-            }
-        }
+            handler.postDelayed({
+                if (click == 1) {
+                    onItemClick(phim)
+                }
+                if (click >= 2) {
+                    listener.onDoubleClickListener(phim)
+                }
+                click = 0
+            }, 200L)
 
-    }
-
-    inner class RunnableWithParam : Runnable {
-        var param: MovieData
-
-        constructor(param: MovieData) {
-            this.param = param
-        }
-
-        override fun run() {
-            click = 0
-            onItemClick(param)
         }
 
     }
